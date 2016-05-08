@@ -15,7 +15,7 @@ sBox = [
 		            0x70, 0x3E, 0xB5, 0x66, 0x48, 0x03, 0xF6, 0x0E, 0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E,
 		            0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
 		            0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
-		            
+
             		]
 key = "3243f6a8885a308d313198a2e0370734"
 
@@ -47,3 +47,35 @@ def gFunction(word):
 		output[index] = out
 		
 	return output
+
+
+'''
+from AES import *
+a = AES('2b7e151628aed2a6abf7158809cf4f3c', '3243f6a8885a308d313198a2e0370734')
+state = a.state
+key = a.key
+key = a.keySchedule(key)
+state = a.keyAddition(state, key)
+newState = a.byteSubstitution(state)
+mix = a.mixColumns(newState)
+
+
+
+TEST
+text:  3243f6a8885a308d313198a2e0370734
+key:   2b7e151628aed2a6abf7158809cf4f3c
+
+from AES import *
+a = AES('3243f6a8885a308d313198a2e0370734', '2b7e151628aed2a6abf7158809cf4f3c')
+a.encrypt10Rounds()
+
+
+
+11111111111111111111111111111111
+2b7e151628aed2a6abf7158809cf4f3c
+
+
+6ff7590ed6e829f6564672cb9dad16ef 
+15729f1a3b368593f66414136a57ec11 
+
+'''
