@@ -9,12 +9,12 @@ class AES:
 	RC = list()
 
 
-	def __init__(self, plaintext, key):
-		self.plaintext = plaintext
-		self.key = key
+	def __init__(self):
+		#self.plaintext = plaintext
+		#self.key = key
 
 		
-		self.initStateMatrix(plaintext)
+		#self.initStateMatrix(plaintext)
 		self.initTables()
 
 	def initTables(self):
@@ -80,13 +80,18 @@ class AES:
 
 
 	def initStateMatrix(self, plaintext):
+		state = []
+
 		while plaintext:
-			self.state.append(plaintext[:2])
+			state.append(plaintext[:2])
 			plaintext = plaintext[2:]
+
+		return state
 
 	#HELPER FUNCTIONS
 
 	def xor(self, left, right):
+
 		out = int('0x{}'.format(left), 0) ^ int('0x{}'.format(right), 0)
 		out = str(hex(out))[2:]
 
@@ -94,7 +99,16 @@ class AES:
 			out = "0" + out
 
 		return out
+	'''
+	def xor(self, left, right):
 
+		left = int(left, 16)
+		right = int(right, 16)
+
+		out = hex(left ^ right)
+
+		return out
+	'''
 	def rotateWord(self, word):
 		return word[1:] + word[:1]
 
@@ -136,10 +150,19 @@ class AES:
 			words.append(key[:8])
 			key = key[8:]
 
+
 		roundKey[0] = self.xor(words[0], self.gFunction(words[3], round))
 		roundKey[1] = self.xor(words[1], roundKey[0])
 		roundKey[2] = self.xor(words[2], roundKey[1])
 		roundKey[3] = self.xor(words[3], roundKey[2])
+
+		try:
+			for k in roundKey:
+				assert len(k) == 8
+		except AssertionError:
+			print("ROUNDKEY != len 8")
+			print(roundKey)
+			exit(1)
 
 		return roundKey
 
@@ -156,12 +179,12 @@ class AES:
 		for word in key:
 			keyString += word
 
-		stateString = self.xor(stateString, keyString)
-
+		stateString = self.xor(stateString, keyString).zfill(len(stateString))
+		
 		while stateString:
 			newState.append(stateString[:2])
 			stateString = stateString[2:]
-
+		
 		return newState
 
 	#BYTE SUBSTITUTION
@@ -254,37 +277,23 @@ class AES:
 
 		return subState
 
-	def encryptOneRound(self):
+	def encryptOneRound(self, plaintext, key):
 		#For encrypting one round
-		roundKey = self.key
 
-		state = self.state
-		print("State:")
-		print(state)
+		state = self.initStateMatrix(plaintext)
 
-		state = self.keyAddition(state, roundKey)
-		print("addRoundKey:")
-		print(state)
+		state = self.keyAddition(state, key)
 
 		state = self.byteSubstitution(state)
-		print("Byte Substitution:")
-		print(state)
 
 		state = self.shiftRows(state)
-		print("Shift Rows:")
-		print(state)
-
+		
 		state = self.mixColumns(state)
-		print("Mix Columns:")
-		print(state)
-
-		roundKey = self.keySchedule(roundKey, 0)
-		print("Round Key:")
-		print(roundKey)
-		state = self.keyAddition(state, roundKey)
-
-		self.key = roundKey
-		self.state = state
+		
+		key = self.keySchedule(key, 0)
+		
+		state = self.keyAddition(state, key)		
+		
 		return state
 
 	def encryptFIPS197(self):
@@ -387,11 +396,10 @@ class AES:
 		return state
 
 
-	def encrypt(self):
+	def encrypt(self, plaintext, key):
 		#ENCRYPTS TEN ROUNDS
 
-		key = self.key
-		state = self.state
+		state = self.initStateMatrix(plaintext)
 
 		#Initial Key Addition Layer
 		state = self.keyAddition(state, key)
@@ -409,31 +417,28 @@ class AES:
 			for byte in key:
 				newKey += byte
 
+			print(key)
 			key = newKey
+
+			try:
+				assert len(key) == 32
+			except AssertionError:
+				print(key)
+				print(len(key))
+				print("ROUND: {}".format(round + 1))
+				exit(1)
 
 			key = self.keySchedule(key, round)
 
 			state = self.keyAddition(state, key)
 
-		prettyCipherText = ""
-		for byte in state:
-			prettyCipherText += byte + " "
-
-		'''
-		print("Plaintext:")
-		print(self.plaintext)
-
-		print("\nCiphertext:")
-		print(state)
-
-		print("\nPretty Ciphertext:")
-		print(prettyCipherText)
-		'''
-
 		return state
 
 def main():
 	while True:
+
+		AESTest = AES()
+
 		print("Please indicate which method you would like to test:")
 		print("1 - Encrypt one round of AES (128 bit)")
 		print("2 - Encrypt 10 rounds of AES (128 bit)")
@@ -449,12 +454,20 @@ def main():
 			print("Please enter a 128 bit hexadecimal key:")
 			key = input(">  ")
 
-			oneRound = AES(plaintext, key)
-			oneRound = oneRound.encryptOneRound()
+			oneRound = AESTest.encryptOneRound(plaintext, key)
 			
 			prettyCipherText = ""
 
-			print("Plaintext:")
+			for byte in oneRound:
+				prettyCipherText += byte + " "
+
+			print("\n\nPlaintext:")
+			print(plaintext)
+
+			print("\nCiphertext:")
+			print(prettyCipherText)
+			print("\n")
+
 
 
 		elif inp == "2":
@@ -464,13 +477,23 @@ def main():
 			print("Please enter a 128 bit hexadecimal key:")
 			key = input(">  ")
 
-			tenRound = AES(plaintext, key)
-			tenRound = tenRound.encrypt()
+			tenRound = AESTest.encrypt(plaintext, key)
 			print(tenRound)
 
+			prettyCipherText = ""
+
+			for byte in tenRound:
+				prettyCipherText += byte + " "
+
+			print("\n\nPlaintext:")
+			print(plaintext)
+
+			print("\nCiphertext:")
+			print(prettyCipherText)
+			print("\n")			
+
 		elif inp == "3":
-			FIPS197Test = AES("","")
-			FIPS197Test = FIPS197Test.encryptFIPS197()
+			FIPS197Test = AESTest.encryptFIPS197()
 			print(FIPS197Test)
 		else:
 			break
