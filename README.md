@@ -3,6 +3,13 @@ Simple implementation of AES using Python. Written for a university cryptology c
 
 Currently, the main test function only supports encryption of 128 bit hexadecimal plaintext/key input.
 
+######In development
+
+- [ ] Padding for <128 bit inputs
+- [ ] Splitting >128 bit inputs into blocks
+- [ ] Encrypt ASCII string inputs
+- [ ] Decryption
+
 I am developing methods for padding (in the case of inputs being too short) and splitting inputs greater than 128 bits into blocks.
 I am also working on methods for encrypting ASCII plaintext. Once this is done, I'll add decryption.
 
