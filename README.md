@@ -31,7 +31,8 @@ I am also working on methods for encrypting ASCII plaintext. Once this is done, 
 
 ######OSX/Linux Terminal
 ```
-python3 AES.py
+~ cd FileLocation
+~ python3 AES.py
 ```
 
 ######Windows Command Prompt
