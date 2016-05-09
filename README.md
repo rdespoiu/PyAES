@@ -19,3 +19,15 @@ I am also working on methods for encrypting ASCII plaintext. Once this is done, 
 ######128 bit hex ciphertext:
 
 39 25 84 1d 02 dc 09 fb dc 11 85 97 19 6a 0b 32
+
+##Running the test file
+
+######OSX/Linux
+```
+python3 AES.py
+```
+
+######Windows
+```
+C:\Python3x\python.exe C:\FileLocation\AES.py
+```
