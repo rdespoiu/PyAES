@@ -22,12 +22,12 @@ I am also working on methods for encrypting ASCII plaintext. Once this is done, 
 
 ##Running the test file
 
-######OSX/Linux
+######OSX/Linux Terminal
 ```
 python3 AES.py
 ```
 
-######Windows
+######Windows Command Prompt
 ```
 C:\Python3x\python.exe C:\FileLocation\AES.py
 ```
