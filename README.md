@@ -7,6 +7,7 @@ I am developing methods for padding (in the case of inputs being too short) and 
 I am also working on methods for encrypting ASCII plaintext. Once this is done, I'll add decryption.
 
 Test Example:
+
 128 bit hex plaintext:
 32 43 f6 a8 88 5a 30 8d 31 31 98 a2 e0 37 07 34
 
